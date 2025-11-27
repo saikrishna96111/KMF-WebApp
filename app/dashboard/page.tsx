@@ -21,7 +21,7 @@ type MenuItem = {
   links: LinkItem[];
 };
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
