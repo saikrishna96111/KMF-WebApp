@@ -1,16 +1,12 @@
-import { auth } from "@/lib/firebaseConfig";
-import { signOut, AuthError } from "firebase/auth";
+import { authService } from "@/lib/authService";
 
 async function logout(): Promise<void> {
   try {
-    if (!auth) {
-      throw new Error("Firebase Auth is not initialized");
-    }
-    await signOut(auth);
+    await authService.logout();
     console.log("User signed out");
   } catch (err) {
-    const error = err as AuthError;
-    console.error("Error signing out:", error.message || error.code);
+    console.error("Error signing out:", (err as Error).message);
+    throw err;
   }
 }
 

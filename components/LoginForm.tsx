@@ -1,16 +1,12 @@
-import { auth } from "@/lib/firebaseConfig";
-import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
+import { authService } from "@/lib/authService";
 
-async function login(email: string, password: string): Promise<void> {
+async function login(identifier: string, password: string): Promise<void> {
   try {
-    if (!auth) {
-      throw new Error("Firebase Auth is not initialized");
-    }
-    const userCredential = await signInWithEmailAndPassword(auth as any, email, password);
-    console.log("User signed in:", userCredential.user);
+    const user = await authService.login(identifier, password);
+    console.log("User signed in:", user);
   } catch (err) {
-    const error = err as AuthError;
-    console.error("Error logging in:", error.message || error.code);
+    console.error("Error logging in:", (err as Error).message);
+    throw err;
   }
 }
 

@@ -1,17 +1,12 @@
-import { auth } from "@/lib/firebaseConfig";
-import { createUserWithEmailAndPassword, AuthError } from "firebase/auth";
+import { authService } from "@/lib/authService";
 
-async function signup(email: string, password: string): Promise<void> {
+async function signup(username: string, email: string, password: string): Promise<void> {
   try {
-    if (!auth) {
-      // Firebase isn't initialized — probably running during build or env vars are missing.
-      throw new Error("Firebase Auth is not initialized");
-    }
-    const userCredential = await createUserWithEmailAndPassword(auth as any, email, password);
-    console.log("User signed up:", userCredential.user);
+    const user = await authService.signup(username, email, password);
+    console.log("User signed up:", user);
   } catch (err) {
-    const error = err as AuthError;
-    console.error("Error signing up:", error.message || error.code);
+    console.error("Error signing up:", (err as Error).message);
+    throw err;
   }
 }
 

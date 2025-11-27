@@ -1,11 +1,15 @@
 "use client";
+
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { auth as firebaseAuth } from "@/lib/firebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
+import type { User } from "../types/user";
+import { authService } from "@/lib/authService";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  login: (identifier: string, password: string) => Promise<User>;
+  signup: (username: string, email: string, password: string) => Promise<User>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,22 +19,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If Firebase isn't initialized (e.g., during SSR or missing env vars),
-    // skip subscription and mark loading false so UI can render safely.
-    if (!firebaseAuth) {
-      setLoading(false);
-      setUser(null);
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(firebaseAuth as any, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    // Initialize local user store and read current user from localStorage
+    authService.initialize();
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+    setLoading(false);
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
+  const login = async (identifier: string, password: string) => {
+    const loggedInUser = await authService.login(identifier, password);
+    setUser(loggedInUser);
+    return loggedInUser;
+  };
+
+  const signup = async (username: string, email: string, password: string) => {
+    const newUser = await authService.signup(username, email, password);
+    setUser(newUser);
+    return newUser;
+  };
+
+  const logout = async () => {
+    await authService.logout();
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

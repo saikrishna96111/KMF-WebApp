@@ -2,9 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/lib/firebaseConfig";
-import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
-import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { useAuth } from "@/context/AuthContext";
 
 interface UserData {
   email: string;
@@ -18,60 +16,17 @@ export default function Login() {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
+  const { login } = useAuth();
+
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
-    // Ensure Firebase is initialized on the client
-    if (!auth || !db) {
-      setError("Unable to connect to Firebase. Please try again later.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Step 1: Find user by username (case-insensitive)
-      const q = query(
-        collection(db as any, "users"),
-        where("usernameLower", "==", username.trim().toLowerCase()),
-        limit(1)
-      );
-
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        setError("Invalid username or password");
-        setLoading(false);
-        return;
-      }
-
-      const userDoc = snapshot.docs[0];
-      const userData = userDoc.data() as UserData;
-
-      if (!userData.isActive) {
-        setError("Your account is disabled. Contact admin.");
-        setLoading(false);
-        return;
-      }
-
-      // Step 2: Sign in using email
-      await signInWithEmailAndPassword(auth as any, userData.email, password);
-
+      await login(username, password);
       router.push("/dashboard");
     } catch (err) {
-      const authErr = err as AuthError;
-      if (
-        authErr.code === "auth/wrong-password" ||
-        authErr.code === "auth/user-not-found" ||
-        authErr.code === "auth/invalid-credential"
-      ) {
-        setError("Invalid username or password");
-      } else if (authErr.code === "auth/too-many-requests") {
-        setError("Too many attempts. Try again later.");
-      } else {
-        setError("Login failed. Please try again.");
-      }
+      setError((err as Error).message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }

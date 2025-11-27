@@ -35,16 +35,14 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Firebase setup and build-safe initialization
+## Local Auth (Firebase removed)
 
-- Firebase is configured through environment variables (see `.env.example`). During build time and server-side rendering the Firebase SDK should not be initialized unless the API key is present. To avoid build failures (for example, `auth/invalid-api-key`), this project only initializes Firebase on the client when the `NEXT_PUBLIC_FIREBASE_API_KEY` variable is set.
+This project no longer uses Firebase for authentication. A small local auth system uses the browser's `localStorage` to store user accounts and the current session.
 
-- If you want to deploy this project to Vercel and use Firebase, add the following Environment Variables under Settings > Environment Variables:
-	- `NEXT_PUBLIC_FIREBASE_API_KEY`
-	- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-	- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-	- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
-	- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
-	- `NEXT_PUBLIC_FIREBASE_APP_ID`
+For now, there's a pre-defined account available for convenience:
 
-- For local development copy `.env.example` -> `.env.local` and add your Firebase values. The application will gracefully handle missing Firebase settings during SSR by not initializing the SDK and showing an appropriate client-side message.
+- Email: `sai@gmail.com`
+- Username: `sai`
+- Password: `1234`
+
+You can also register new accounts using the registration form; those accounts are stored in `localStorage` for local testing.

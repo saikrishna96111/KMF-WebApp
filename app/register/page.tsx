@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { auth, db } from "../../lib/firebaseConfig";
-import { createUserWithEmailAndPassword, AuthError } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Signup() {
@@ -14,6 +12,8 @@ export default function Signup() {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  const { signup } = useAuth();
 
   const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,51 +26,11 @@ export default function Signup() {
 
     setLoading(true);
 
-    // Ensure Firebase is initialized on the client
-    if (!auth || !db) {
-      setError("Unable to connect to Firebase. Please try again later.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const usernameLower = username.toLowerCase();
-
-      // Check if username exists
-      const usernameDoc = await getDoc(doc(db as any, "usernames", usernameLower));
-      if (usernameDoc.exists()) {
-        setError("Username already taken.");
-        setLoading(false);
-        return;
-      }
-
-      // Create user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth as any, email, password);
-      const uid = userCredential.user.uid;
-
-      // Save username → email mapping
-      await setDoc(doc(db as any, "usernames", usernameLower), {
-        uid,
-        email,
-        createdAt: new Date(),
-      });
-
-      // Save full user record
-      await setDoc(doc(db as any, "users", uid), {
-        username,
-        email,
-        isActive: true,
-        role: "user",
-        createdAt: new Date(),
-      });
-
+      await signup(username, email, password);
       router.push("/dashboard");
     } catch (err) {
-      const authErr = err as AuthError;
-      if (authErr.code === "auth/email-already-in-use") setError("Email already in use.");
-      else if (authErr.code === "auth/invalid-email") setError("Invalid email.");
-      else if (authErr.code === "auth/weak-password") setError("Password too weak.");
-      else setError("Signup failed. Try again.");
+      setError((err as Error).message || "Signup failed. Try again.");
     } finally {
       setLoading(false);
     }
