@@ -44,94 +44,27 @@ export default function Dashboard() {
 
   const menuItems: MenuItem[] = [
     {
-      label: "Masters",
-      links: [
-        {
-          name: "Customer",
-          path: "/dashboard/customer",
-          subLinks: [
-            { name: "Add Admin", path: "/dashboard/users/add/admin" },
-            { name: "Add Editor", path: "/dashboard/users/add/editor" },
-          ],
-        },
-        {
-          name: "Contractor",
-          path: "/dashboard/contractor",
-          subLinks: [
-            { name: "Add Admin", path: "/dashboard/users/add/admin" },
-            { name: "Add Editor", path: "/dashboard/users/add/editor" },
-          ],
-        },
-        // Add all other items similarly
-      ],
+      label: "Dashboard",
+      links: [{ name: "Overview", path: "/dashboard" }],
     },
     {
-      label: "Milk/Product Sales",
+      label: "Sales & Distribution",
       links: [
-        { name: "Sales Through Routes", path: "/dashboard/milk/routes" },
-        { name: "Modify Indents", path: "/dashboard/milk/modifyindents" },
-        { name: "Employee Concession (Ghee) Post from Salary Bill", path: "/dashboard/milk/salary" },
-        { name: "Employee Concession (Ghee) Stock-OB", path: "/dashboard/milk/stockob" },
-        { name: "Employee Concession (Ghee) Stock", path: "/dashboard/milk/stock" },
-        { name: "Employee Concession (Ghee) Entry", path: "/dashboard/milk/entry" },
-        { name: "Employee Concession (Ghee) Post to Market", path: "/dashboard/milk/market" },
+        { name: "Milk Product Sales", path: "/dashboard/sales/milk-product" },
+        { name: "Parlor Sales", path: "/dashboard/sales/parlor" },
+        { name: "Route & Dispatch", path: "/dashboard/sales/route" },
       ],
     },
-    {
-      label: "Parlour",
-      links: [
-        { name: "Stock OB", path: "/dashboard/parlour/stockob" },
-        { name: "Set Date", path: "/dashboard/parlour/setdate" },
-        { name: "Stock Entry", path: "/dashboard/parlour/stockentry" },
-        { name: "Salesman/Contractor Ledger Entry", path: "/dashboard/parlour/salesman" },
-        { name: "Addition/Deduction List", path: "/dashboard/parlour/addition" },
-        {
-          name: "Parlour/Depot Reports",
-          path: "/dashboard/parlour/reports",
-          subLinks: [
-            { name: "Add Admin", path: "/dashboard/users/add/admin" },
-            { name: "Add Editor", path: "/dashboard/users/add/editor" },
-          ],
-        },
-      ],
-    },
-    {
-      label: "Reports",
-      links: [
-        { name: "Check List", path: "/dashboard/reports/checklist" },
-        { name: "Check List (With Amount)", path: "/dashboard/reports/checklistamount" },
-        { name: "Route Sheets", path: "/dashboard/reports/routesheets" },
-        { name: "Payment Challan", path: "/dashboard/reports/paymentchallan" },
-        { name: "Gate Pass Sales Reports", path: "/dashboard/reports/gate" },
-        { name: "Bank Challans", path: "/dashboard/reports/bank" },
-        { name: "View Route Abstracts", path: "/dashboard/reports/view" },
-        { name: "Incentive Report", path: "/dashboard/reports/incentive" },
-        { name: "Credit Bills", path: "/dashboard/reports/credit" },
-        { name: "Sales Reports", path: "/dashboard/reports/sales" },
-        { name: "Target Reports", path: "/dashboard/reports/target" },
-        { name: "Bank Statements", path: "/dashboard/reports/bankstatements" },
-      ],
-    },
-    {
-      label: "Samrudhi",
-      links: [
-        { name: "Marketing and Sales", path: "/dashboard/samrudhi/marketing" },
-        { name: "FGS and Security", path: "/dashboard/samrudhi/security" },
-        { name: "Plant and Production", path: "/dashboard/samrudhi/production" },
-        { name: "Procurement and Input", path: "/dashboard/samrudhi/procurement" },
-        { name: "HR and Administration", path: "/dashboard/samrudhi/hr" },
-        { name: "Purchase and Stores", path: "/dashboard/samrudhi/purchase" },
-        { name: "Accounts and Finance", path: "/dashboard/samrudhi/finance" },
-      ],
-    },
-    {
-      label: "Exit",
-      links: [
-        { name: "Profile", path: "/dashboard/settings/profile" },
-        { name: "Preferences", path: "/dashboard/settings/preferences" },
-        { name: "Logout", path: "/logout" },
-      ],
-    },
+    { label: "Production & Quality", links: [{ name: "Production & Quality", path: "/dashboard/production" }] },
+    { label: "Procurement & Input", links: [{ name: "Procurement & Input", path: "/dashboard/procurement" }] },
+    { label: "Inventory", links: [{ name: "Inventory", path: "/dashboard/inventory" }] },
+    { label: "Finance & Accounts", links: [{ name: "Finance & Accounts", path: "/dashboard/finance" }] },
+    { label: "HR", links: [{ name: "HR", path: "/dashboard/hr" }] },
+    { label: "Master Data", links: [{ name: "Master Data", path: "/dashboard/master-data" }] },
+    { label: "Settings", links: [{ name: "Settings", path: "/dashboard/settings" }] },
+    { label: "Reports & MIS", links: [{ name: "Reports & MIS", path: "/dashboard/reports" }] },
+    { label: "Help", links: [{ name: "Help", path: "/dashboard/help" }] },
+    { label: "Exit", links: [{ name: "Logout", path: "/logout" }] },
   ];
 
   const handleNavigation = (path: string) => {
@@ -164,8 +97,14 @@ export default function Dashboard() {
               {menuItems.map((item) => (
                 <div key={item.label} className="relative">
                   <button
-                    onClick={() =>
-                      setOpenDropdown(openDropdown === item.label ? null : item.label)
+                    onClick={() => {
+                      // If item has a single link with no sublinks, navigate directly.
+                      if (item.links.length === 1 && !item.links[0].subLinks) {
+                        handleNavigation(item.links[0].path);
+                        return;
+                      }
+                      setOpenDropdown(openDropdown === item.label ? null : item.label);
+                    }
                     }
                     className="flex items-center gap-1 px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-md font-medium transition"
                   >
@@ -231,12 +170,17 @@ export default function Dashboard() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden bg-white border-t border-gray-200">
-            {menuItems.map((item) => (
+              {menuItems.map((item) => (
               <div key={item.label} className="border-b border-gray-100">
                 <button
-                  onClick={() =>
-                    setOpenDropdown(openDropdown === item.label ? null : item.label)
-                  }
+                  onClick={() => {
+                    // If item has a single link with no sublinks, navigate directly
+                    if (item.links.length === 1 && !item.links[0].subLinks) {
+                      handleNavigation(item.links[0].path);
+                      return;
+                    }
+                    setOpenDropdown(openDropdown === item.label ? null : item.label);
+                  }}
                   className="w-full px-6 py-4 text-left font-medium text-gray-700 hover:bg-indigo-50 flex justify-between items-center"
                 >
                   {item.label}
