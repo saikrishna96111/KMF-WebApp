@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import Dashboard from "@/components/Dashboard";
 import { ChevronDown, Menu, X } from "lucide-react";
 
 type SubLink = {
@@ -243,8 +244,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold text-center text-indigo-800 mb-10">Welcome to KMF Dashboard</h1>
-        <p className="text-center text-gray-700 mb-6">Choose an item from the nav to explore.</p>
+        <Dashboard />
       </main>
     </div>
   );
