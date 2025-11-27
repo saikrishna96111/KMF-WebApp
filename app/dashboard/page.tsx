@@ -43,28 +43,36 @@ export default function Dashboard() {
     );
 
   const menuItems: MenuItem[] = [
+    { label: "Dashboard", links: [{ name: "Overview", path: "/dashboard" }] },
+    { label: "Master Data", links: [{ name: "Master Data", path: "/dashboard/master-data" }] },
     {
-      label: "Dashboard",
-      links: [{ name: "Overview", path: "/dashboard" }],
-    },
-    {
-      label: "Sales & Distribution",
+      label: "Operations",
       links: [
-        { name: "Milk Product Sales", path: "/dashboard/sales/milk-product" },
-        { name: "Parlor Sales", path: "/dashboard/sales/parlor" },
-        { name: "Route & Dispatch", path: "/dashboard/sales/route" },
+        {
+          name: "Sales & Distribution",
+          path: "/dashboard/operations/sales",
+          subLinks: [
+            { name: "Milk Product Sales", path: "/dashboard/operations/sales/milk-product" },
+            { name: "Parlor Sales", path: "/dashboard/operations/sales/parlor" },
+            { name: "Route & Dispatch", path: "/dashboard/operations/sales/route" },
+          ],
+        },
+        { name: "Production & Quality", path: "/dashboard/operations/production" },
+        { name: "Procurement & Input", path: "/dashboard/operations/procurement" },
+        { name: "Inventory", path: "/dashboard/operations/inventory" },
       ],
     },
-    { label: "Production & Quality", links: [{ name: "Production & Quality", path: "/dashboard/production" }] },
-    { label: "Procurement & Input", links: [{ name: "Procurement & Input", path: "/dashboard/procurement" }] },
-    { label: "Inventory", links: [{ name: "Inventory", path: "/dashboard/inventory" }] },
     { label: "Finance & Accounts", links: [{ name: "Finance & Accounts", path: "/dashboard/finance" }] },
     { label: "HR", links: [{ name: "HR", path: "/dashboard/hr" }] },
-    { label: "Master Data", links: [{ name: "Master Data", path: "/dashboard/master-data" }] },
-    { label: "Settings", links: [{ name: "Settings", path: "/dashboard/settings" }] },
     { label: "Reports & MIS", links: [{ name: "Reports & MIS", path: "/dashboard/reports" }] },
-    { label: "Help", links: [{ name: "Help", path: "/dashboard/help" }] },
-    { label: "Exit", links: [{ name: "Logout", path: "/logout" }] },
+    {
+      label: "More",
+      links: [
+        { name: "Settings", path: "/dashboard/more/settings" },
+        { name: "Help", path: "/dashboard/more/help" },
+        { name: "Logout", path: "/logout" },
+      ],
+    },
   ];
 
   const handleNavigation = (path: string) => {
@@ -235,9 +243,8 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold text-center text-indigo-800 mb-10">
-          Welcome to KMF Dashboard
-        </h1>
+        <h1 className="text-4xl font-bold text-center text-indigo-800 mb-10">Welcome to KMF Dashboard</h1>
+        <p className="text-center text-gray-700 mb-6">Choose an item from the nav to explore.</p>
       </main>
     </div>
   );
